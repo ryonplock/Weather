@@ -1,0 +1,87 @@
+http://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php#
+
+Name: LatLonListZipCode
+Binding: ndfdXMLBinding
+Endpoint: http://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php
+SoapAction: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#LatLonListZipCode
+Style: rpc
+Input:
+  use: encoded
+  namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+  encodingStyle: http://schemas.xmlsoap.org/soap/encoding/
+  message: LatLonListZipCodeRequest
+  parts:
+    zipCodeList: xsd:string
+Output:
+  use: encoded
+  namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+  encodingStyle: http://schemas.xmlsoap.org/soap/encoding/
+  message: LatLonListZipCodeResponse
+  parts:
+    listLatLonOut: xsd:string
+Namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+Transport: http://schemas.xmlsoap.org/soap/http
+Documentation: Returns the latitude and longitude pairs corresponding to a list of one or more zip codes. Supports zip codes for the Continental United States, Alaska, Hawaii, and Puerto Rico only. Provides points in a format suitable for use in calling multi-point functions NDFDgenLatLonList and NDFDgenByDayLatLonList.
+
+
+
+
+Name: NDFDgenByDay
+Binding: ndfdXMLBinding
+Endpoint: http://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php
+SoapAction: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#NDFDgenByDay
+Style: rpc
+Input:
+  use: encoded
+  namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+  encodingStyle: http://schemas.xmlsoap.org/soap/encoding/
+  message: NDFDgenByDayRequest
+  parts:
+    latitude: xsd:decimal
+    longitude: xsd:decimal
+    startDate: xsd:date
+    numDays: xsd:integer
+    Unit: xsd:string
+    format: xsd:string
+Output:
+  use: encoded
+  namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+  encodingStyle: http://schemas.xmlsoap.org/soap/encoding/
+  message: NDFDgenByDayResponse
+  parts:
+    dwmlByDayOut: xsd:string
+Namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+Transport: http://schemas.xmlsoap.org/soap/http
+Documentation: Returns National Weather Service digital weather forecast data. Supports latitudes and longitudes for the Continental United States, Hawaii, Guam, and Puerto Rico only. Allowable values for the input variable "format" are "24 hourly" and "12 hourly". The input variable "startDate" is a date string representing the first day (Local) of data to be returned. The input variable "numDays" is the integer number of days for which the user wants data. Allowable values for the input variable "Unit" are "e" for U.S. Standare/English units and "m" for Metric units.
+
+Request:
+     <ndf:NDFDgenByDay soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+         <latitude xsi:type="xsd:decimal">47.853</latitude>
+         <longitude xsi:type="xsd:decimal">-122.283</longitude>
+         <startDate xsi:type="xsd:date">2012-01-13</startDate>
+         <numDays xsi:type="xsd:integer">3</numDays>
+         <Unit xsi:type="dwml:unitType" xmlns:dwml="http://graphical.weather.gov/xml/DWMLgen/schema/DWML.xsd">e</Unit>
+         <format xsi:type="dwml:formatType" xmlns:dwml="http://graphical.weather.gov/xml/DWMLgen/schema/DWML.xsd">24 hourly</format>
+      </ndf:NDFDgenByDay>
+
+Response:
+...
+
+
+
+http://www.sdn.sap.com/irj/scn/weblogs?blog=/pub/wlg/23160
+My first web service call through ksoap2-android
+
+JAR with all dependencies for android called ksoap2-android-assembly-2.5.2-jar-with-dependencies.jar 
+assume the web service I want to access is Jira, so here is what needs to be done for a login:
+
+    HttpTransportSE transportSE = new HttpTransportSE(
+        “http://my.server.com:8080/rpc/soap/jirasoapservice-v2”);
+    SoapObject request = new SoapObject("http://soap.rpc.jira.atlassian.com", "login");
+    request.addProperty("username", username);
+    request.addProperty("password", password);
+    SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+    envelope.setOutputSoapObject(request);
+    transportSE.call("login", envelope);
+
+    

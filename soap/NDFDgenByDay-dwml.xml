@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<dwml version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://graphical.weather.gov/xml/DWMLgen/schema/DWML.xsd">
+  <head>
+    <product srsName="WGS 1984" concise-name="dwmlByDay" operational-mode="official">
+      <title>NOAA's National Weather Service Forecast by 24 Hour Period</title>
+      <field>meteorological</field>
+      <category>forecast</category>
+      <creation-date refresh-frequency="PT1H">2012-01-13T19:19:37Z</creation-date>
+    </product>
+    <source>
+      <more-information>http://graphical.weather.gov/xml/</more-information>
+      <production-center>Meteorological Development Laboratory<sub-center>Product Generation Branch</sub-center></production-center>
+      <disclaimer>http://www.nws.noaa.gov/disclaimer.html</disclaimer>
+      <credit>http://www.weather.gov/</credit>
+      <credit-logo>http://www.weather.gov/images/xml_logo.gif</credit-logo>
+      <feedback>http://www.weather.gov/feedback.php</feedback>
+    </source>
+  </head>
+  <data>
+    <location>
+      <location-key>point1</location-key>
+      <point latitude="47.85" longitude="-122.28"/>
+    </location>
+    <moreWeatherInformation applicable-location="point1">http://forecast.weather.gov/MapClick.php?textField1=47.85&amp;textField2=-122.28</moreWeatherInformation>
+    <time-layout time-coordinate="local" summarization="24hourly">
+      <layout-key>k-p24h-n3-1</layout-key>
+      <start-valid-time>2012-01-13T06:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-14T06:00:00-08:00</end-valid-time>
+      <start-valid-time>2012-01-14T06:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-15T06:00:00-08:00</end-valid-time>
+      <start-valid-time>2012-01-15T06:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-16T06:00:00-08:00</end-valid-time>
+    </time-layout>
+    <time-layout time-coordinate="local" summarization="12hourly">
+      <layout-key>k-p12h-n6-2</layout-key>
+      <start-valid-time>2012-01-13T06:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-13T18:00:00-08:00</end-valid-time>
+      <start-valid-time>2012-01-13T18:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-14T06:00:00-08:00</end-valid-time>
+      <start-valid-time>2012-01-14T06:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-14T18:00:00-08:00</end-valid-time>
+      <start-valid-time>2012-01-14T18:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-15T06:00:00-08:00</end-valid-time>
+      <start-valid-time>2012-01-15T06:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-15T18:00:00-08:00</end-valid-time>
+      <start-valid-time>2012-01-15T18:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-16T06:00:00-08:00</end-valid-time>
+    </time-layout>
+    <time-layout time-coordinate="local" summarization="24hourly">
+      <layout-key>k-p22h-n2-3</layout-key>
+      <start-valid-time>2012-01-13T12:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-14T06:00:00-08:00</end-valid-time>
+      <start-valid-time>2012-01-14T06:00:00-08:00</start-valid-time>
+      <end-valid-time>2012-01-14T10:00:00-08:00</end-valid-time>
+    </time-layout>
+    <parameters applicable-location="point1">
+      <temperature type="maximum" units="Fahrenheit" time-layout="k-p24h-n3-1">
+        <name>Daily Maximum Temperature</name>
+        <value>45</value>
+        <value>41</value>
+        <value>37</value>
+      </temperature>
+      <temperature type="minimum" units="Fahrenheit" time-layout="k-p24h-n3-1">
+        <name>Daily Minimum Temperature</name>
+        <value>37</value>
+        <value>33</value>
+        <value>31</value>
+      </temperature>
+      <probability-of-precipitation type="12 hour" units="percent" time-layout="k-p12h-n6-2">
+        <name>12 Hourly Probability of Precipitation</name>
+        <value>0</value>
+        <value>10</value>
+        <value>79</value>
+        <value>54</value>
+        <value>49</value>
+        <value>52</value>
+      </probability-of-precipitation>
+      <hazards time-layout="k-p22h-n2-3">
+        <name>Watches, Warnings, and Advisories</name>
+        <hazard-conditions>
+          <hazard hazardCode="AS.Y" phenomena="Air Stagnation" significance="Advisory" hazardType="long duration">
+            <hazardTextURL>http://forecast.weather.gov/wwamap/wwatxtget.php?cwa=sew&amp;wwa=Air%20Stagnation%20Advisory</hazardTextURL>
+          </hazard>
+          <hazard hazardCode="AS.Y" phenomena="Air Stagnation" significance="Advisory" hazardType="long duration">
+            <hazardTextURL>http://forecast.weather.gov/wwamap/wwatxtget.php?cwa=sew&amp;wwa=Air%20Stagnation%20Advisory</hazardTextURL>
+          </hazard>
+        </hazard-conditions>
+      </hazards>
+      <weather time-layout="k-p24h-n3-1">
+        <name>Weather Type, Coverage, and Intensity</name>
+        <weather-conditions weather-summary="Mostly Cloudy"/>
+        <weather-conditions weather-summary="Rain">
+          <value coverage="definitely" intensity="light" weather-type="rain" qualifier="none"/>
+        </weather-conditions>
+        <weather-conditions weather-summary="Chance Snow Showers">
+          <value coverage="chance" intensity="light" weather-type="snow showers" qualifier="none"/>
+        </weather-conditions>
+      </weather>
+      <conditions-icon type="forecast-NWS" time-layout="k-p24h-n3-1">
+        <name>Conditions Icons</name>
+        <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/bkn.jpg</icon-link>
+        <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/ra80.jpg</icon-link>
+        <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/sn50.jpg</icon-link>
+      </conditions-icon>
+    </parameters>
+  </data>
+</dwml>

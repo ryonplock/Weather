@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Homework008</string>
+    <string name="app_name">Weather</string>
+    <string name="no_data">No data</string>
+    <string name="menu_title_settings">Settings</string>
+    <string name="menu_title_help">Help</string>
+    <string name="settings_prefscreen_title">Settings</string>
+    <string name="settings_prefscreen_summary">Change settings</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_zipcode_title">Zip code</string>
+    <string name="settings_zipcode_summary">Enter your zip code</string>
+    <string name="help_dialog_title">About Weather</string>
+    <string name="updated_sample">Updated at 12:30am</string>
+    <string name="data_retrieval_failed">Cannot contact the server. Please try it again later.</string>
+    <string name="settings_zipcode_defaultvalue">98101</string>
+        
+</resources>
