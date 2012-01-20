@@ -23,8 +23,7 @@ import android.preference.PreferenceManager;
 */
 public class NDFDParams {
    public enum Type { 
-       LATITUDE(0), LONGITUDE(1), STARTDATE(2), 
-       NUMDAYS(3), UNIT(4), FORMAT(5), ZIPCODE(6);
+       STARTDATE(0), NUMDAYS(1), UNIT(2), FORMAT(3), ZIPCODE(4);
        
        private final int index;
        Type(int index){
@@ -38,24 +37,17 @@ public class NDFDParams {
    
    // Keys
    private static final String[] KEYS =
-   { "latitude", "longitude", "startDate", "numDays", "unit", "format", "zipcode" };
+   {"startDate", "numDays", "unit", "format", "zipcode" };
 
    // Default values to use
    private static final String[] DEFAULT_VALUES =
-   { "47.611", "-122.333", "2012-01-13", "5", "e", "24 hourly", "98101" };
+   {"2012-01-13", "5", "e", "24 hourly", "98101" };
    
    private List<String> paramValues = new ArrayList<String>();
 
    public NDFDParams(Context context)
    {
        load(context);
-   }
-   
-   public String[] getParams()
-   {
-       String[] ret = new String[paramValues.size()];
-       paramValues.toArray(ret);
-       return ret;
    }
    
    public String getParam(Type type)

@@ -4,7 +4,6 @@
 package edu.washington.shan;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,12 +24,12 @@ public class ForecastAdapter extends BaseAdapter
 {
     private static final String TAG = "ForecastAdapter";
     private LayoutInflater mInflater;
-    private ArrayList<String> mForecasts;
+    private Forecast mForecasts;
     
-    public ForecastAdapter(Context context, ArrayList<String> result)
+    public ForecastAdapter(Context context, Forecast forecast)
     {
         mInflater = LayoutInflater.from(context);
-        mForecasts = result;
+        mForecasts = forecast;
     }
     
     @Override
@@ -67,12 +66,18 @@ public class ForecastAdapter extends BaseAdapter
             holder = (ViewHolder) v.getTag();
         }
         
-        // parse by ;
-        Log.v(TAG, getItem(arg0));
-        String[] tokens = getItem(arg0).split(";");
-        
-        holder.mImageView.setImageResource(GetThumbImageResourceId(tokens[1]));
-        holder.mDisplay = tokens[0]; // like "Rain 43(6)
+        // parse by ,
+        String item = getItem(arg0);
+        Log.v(TAG, item);
+        String[] tokens = item.split(",");
+        if(tokens.length == 2){
+            holder.mImageView.setImageResource(GetThumbImageResourceId(tokens[1]));
+            holder.mDisplay = tokens[0]; // like "Rain 43(6)
+        }else if(tokens.length == 1){
+            // Bad data!
+            holder.mImageView.setImageResource(GetThumbImageResourceId(""));
+            holder.mDisplay = tokens[0]; // like "Rain 43(6)
+        }
         holder.mTitle.setText(getDateToDisplay(arg0));
         holder.mContent.setText(holder.mDisplay);
         v.setTag(holder);
@@ -103,6 +108,7 @@ public class ForecastAdapter extends BaseAdapter
             if(imageUrl.contains("freezingrain")) return R.drawable.freezingrain;
             if(imageUrl.contains("hazy")) return R.drawable.hazy;
             if(imageUrl.contains("sctn")) return R.drawable.mcloudyn;
+            if(imageUrl.contains("bkn")) return R.drawable.mcloudy;
             if(imageUrl.contains("sct")) return R.drawable.mcloudy;
             if(imageUrl.contains("fewn")) return R.drawable.pcloudyn;
             if(imageUrl.contains("few")) return R.drawable.pcloudy;

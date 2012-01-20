@@ -1,14 +1,10 @@
 package edu.washington.shan;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,14 +12,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.widget.BaseAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -127,13 +118,13 @@ public class MainActivity extends ListActivity {
             Bundle bundle = msg.getData();
             if(bundle != null)
             {
-                ArrayList<String> result = bundle.getStringArrayList(Constants.KEY_STATUS);
-                if(result != null && result.size() > 0)
+                Forecast forecast = bundle.getParcelable(Constants.KEY_STATUS);
+                if(forecast != null)
                 {
                     Log.v(TAG, "Data retrieval succeeded");
                     
                     // Update the list
-                    fillData(result);
+                    fillData(forecast);
                     
                     // Get and update the timestamp
                     String updatedTime = Utils.getTodayInFormat(
@@ -143,7 +134,7 @@ public class MainActivity extends ListActivity {
                     
                     // Mark the time upon a successful retrieval of data
                     markSyncTime();
-                    saveForecast(result);
+                    saveForecast(forecast);
                 }
                 else
                 {
@@ -158,6 +149,9 @@ public class MainActivity extends ListActivity {
         }
     };
     
+    /**
+     * Restore from a cached forecast object
+     */
     private void restoreCachedForecast()
     {
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
@@ -168,9 +162,8 @@ public class MainActivity extends ListActivity {
             int numOfDays = sharedPref.getInt(Constants.KEY_NUM_DAYS_FORECAST, -1);
             if(numOfDays != -1)
             {
-                ArrayList<String> forecast = new ArrayList<String>();
-                for(int n=0; n<numOfDays; n++)
-                    forecast.add(sharedPref.getString("Day" + n, "invalid"));
+                Forecast forecast = new Forecast(sharedPref
+                        .getString(Constants.KEY_FORECAST,""));
                 fillData(forecast);
             }
             
@@ -185,23 +178,23 @@ public class MainActivity extends ListActivity {
         }
     }
 
-    private void saveForecast(ArrayList<String> results)
+    /**
+     * Save the forecast to shared pref so that it can be retrieved later
+     * @param forecast
+     */
+    private void saveForecast(Forecast forecast)
     {
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(Constants.KEY_NUM_DAYS_FORECAST, 
                 Constants.NUM_DAYS_FORECAST);
-        for(int n=0; n<results.size(); n++)
-        {
-            String key = "Day" + n; 
-            editor.putString(key, results.get(n));
-        }
+        editor.putString(Constants.KEY_FORECAST, forecast.serialize());
         editor.commit();
     }
     
-    private void fillData(ArrayList<String> result)
+    private void fillData(Forecast forecast)
     {
-        mAdapter = new ForecastAdapter(this, result);
+        mAdapter = new ForecastAdapter(this, forecast);
         this.setListAdapter(mAdapter);
     }
     
@@ -219,7 +212,7 @@ public class MainActivity extends ListActivity {
             Log.v(TAG, "Attempting to sync...");
             // Set the progress bar visibility
             mProgressBar.setVisibility(ProgressBar.VISIBLE);
-            mWorkerThread = new Thread(new WorkerThreadRunnable(this, mHandler, mParams.getParams()));
+            mWorkerThread = new Thread(new WorkerThreadRunnable(mHandler, mParams));
             mWorkerThread.start();
             return false;
         }

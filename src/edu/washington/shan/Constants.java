@@ -15,4 +15,5 @@ public class Constants
     public static final String KEY_NUM_DAYS_FORECAST = "numOfDaysForecast";
     public static final int NUM_DAYS_FORECAST = 5;
     public static final String LAST_UPDATED_TIME_FORMAT = "h:mm a";
+    public static final String KEY_FORECAST = "forecastCached";
 }

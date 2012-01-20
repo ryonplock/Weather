@@ -34,7 +34,7 @@ public class NDFDXmlParser_NDFDgenByDay
     private static final String CONDITIONS_ICON = "conditions-icon";
     private static final String ICON_LINK = "icon-link";
     private static final String VALUE = "value";
-    private static final String INVALID = "invalid";
+    private static final String INVALID = "n/a";
     
     private Forecast forecast;
 

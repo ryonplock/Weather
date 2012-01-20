@@ -4,11 +4,8 @@
 package edu.washington.shan;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.ksoap2.SoapEnvelope;
-import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
@@ -22,18 +19,20 @@ import android.util.Log;
 
 /**
  * @author shan@uw.edu
+ * 
+ * A worker thread to send and receive a soap request/response
  *
  */
 public class WorkerThreadRunnable implements Runnable {
 	
 	private static final String TAG = "WorkerThreadRunnable";
 	
-    private static final String URL = "http://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php";
+    // NDFD server and wsdl
+	private static final String URL = "http://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php";
     private static final String NAMESPACE = "http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl";
     
 	private Handler mHandler;
-	private Context mContext; 
-	private String[] mArgs;
+	private NDFDParams mArgs;
 	
 	/**
 	 * Worker thread constructor
@@ -41,12 +40,8 @@ public class WorkerThreadRunnable implements Runnable {
 	 * @param handler Callback function if the caller wants to be notified when worker thread is complete. May be null.
 	 * @param args  NDFDParams
 	 */
-	public WorkerThreadRunnable(Context context, Handler handler, String[] args)
+	public WorkerThreadRunnable(Handler handler, NDFDParams args)
 	{
-	    if(args.length != 7)
-	        throw new IllegalArgumentException("There must be 7 args");
-	    
-		mContext = context;
 		mHandler = handler;
 		mArgs = args;
 	}
@@ -64,14 +59,14 @@ public class WorkerThreadRunnable implements Runnable {
     */
 	@Override
 	public void run() {
-	    ArrayList<String> result = null;
+	    Forecast forecast = null;
 	    
         try
         {
-            String[] lonlat = callLatLonListZipCode(mArgs[6]); // TODO FIX hardcode
+            String[] latlon = callLatLonListZipCode(mArgs.getParam(NDFDParams.Type.ZIPCODE));
             
-            if(lonlat.length == 2)
-                result = callNDFDgenByDay(lonlat[0], lonlat[1] );
+            if(latlon.length == 2)
+                forecast = callNDFDgenByDay(latlon[0], latlon[1] );
         }
         catch (IOException e)
         {
@@ -83,7 +78,7 @@ public class WorkerThreadRunnable implements Runnable {
         }
 	    finally
 	    {
-	        informFinish(result);
+	        informFinish(forecast);
 	    }
 	}
 	
@@ -147,18 +142,49 @@ public class WorkerThreadRunnable implements Runnable {
         return results;
 	}
 	
-	private ArrayList<String> callNDFDgenByDay(String latitude, String longitude) throws IOException, XmlPullParserException
+	/*
+    Name: NDFDgenByDay
+    Binding: ndfdXMLBinding
+    Endpoint: http://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php
+    SoapAction: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#NDFDgenByDay
+    Style: rpc
+    Input:
+      use: encoded
+      namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+      encodingStyle: http://schemas.xmlsoap.org/soap/encoding/
+      message: NDFDgenByDayRequest
+      parts:
+        latitude: xsd:decimal
+        longitude: xsd:decimal
+        startDate: xsd:date
+        numDays: xsd:integer
+        Unit: xsd:string
+        format: xsd:string
+    Output:
+      use: encoded
+      namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+      encodingStyle: http://schemas.xmlsoap.org/soap/encoding/
+      message: NDFDgenByDayResponse
+      parts:
+        dwmlByDayOut: xsd:string
+    Namespace: http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl
+    Transport: http://schemas.xmlsoap.org/soap/http
+    Documentation: Returns National Weather Service digital weather forecast data. Supports latitudes and longitudes for the Continental United States, Hawaii, Guam, and Puerto Rico only. Allowable values for the input variable "format" are "24 hourly" and "12 hourly". The input variable "startDate" is a date string representing the first day (Local) of data to be returned. The input variable "numDays" is the integer number of days for which the user wants data. Allowable values for the input variable "Unit" are "e" for U.S. Standare/English units and "m" for Metric units.
+	*/
+	private Forecast callNDFDgenByDay(String latitude, String longitude) throws IOException, XmlPullParserException
 	{
         final String SOAP_ACTION = "http://graphical.weather.gov/xml/DWMLgen/wsdl/ndfdXML.wsdl#NDFDgenByDay";
+        
+        Forecast forecast = null;
         
         SoapObject request = new SoapObject(NAMESPACE, "ndf:NDFDgenByDay");
         request.addAttribute("soapenv:encodingStyle", "http://schemas.xmlsoap.org/soap/encoding/");
         request.addProperty("latitude", latitude);
         request.addProperty("longitude", longitude);
-        request.addProperty("startDate", mArgs[2]);
-        request.addProperty("numDays", mArgs[3]);
-        request.addProperty("Unit", mArgs[4]);
-        request.addProperty("format", mArgs[5]);
+        request.addProperty("startDate", mArgs.getParam(NDFDParams.Type.STARTDATE));
+        request.addProperty("numDays", mArgs.getParam(NDFDParams.Type.NUMDAYS));
+        request.addProperty("Unit", mArgs.getParam(NDFDParams.Type.UNIT));
+        request.addProperty("format", mArgs.getParam(NDFDParams.Type.FORMAT));
         
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.setOutputSoapObject(request);
@@ -170,26 +196,25 @@ public class WorkerThreadRunnable implements Runnable {
         if(envelope.getResponse() != null)
         {
             String strXml = envelope.getResponse().toString();
-            Forecast forecast = new Forecast();
+            forecast = new Forecast();
             NDFDXmlParser_NDFDgenByDay parser = new NDFDXmlParser_NDFDgenByDay(forecast);
             parser.parse(strXml);
-            return (ArrayList<String>) forecast.getConditions();
         }
-        return null;
+        return forecast;
 	}
 	
 	/**
 	 * Notify the caller of the worker thread completion
 	 * @param results
 	 */
-	public void informFinish(ArrayList<String> results)
+	public void informFinish(Forecast forecast)
 	{
 		Log.v(TAG, "Finished retreiving data");
 		
 		// Return the status
 		Bundle bundle = new Bundle();
-		bundle.putStringArrayList(Constants.KEY_STATUS, results); 
-		// note that results can be null. The receiver must be aware and handle that. 
+		bundle.putParcelable(Constants.KEY_STATUS, forecast);
+		// note that forecast can be null. The receiver must be aware and handle that. 
 		
 		if(mHandler != null)
 		{
